@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('sherd')
 const columns = ["拼对编号", "所属单位", "陶系", "纹饰", "可辨器型", "拼合片数", "拼对结论", "拼对状态"]
 const actions = ["提交拼对", "确认复原", "终止拼对"]
 const statuses = ["待拼对", "拼对中", "已复原", "已放弃"]
-const stats = [{"label": "待拼对记录", "value": 0}, {"label": "拼对中记录", "value": 0}, {"label": "已复原器物", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('flotation')
 const columns = ["样品编号", "采样单位", "样品重量", "浮选日期", "炭屑含量", "炭化种子数", "送检去向", "样品状态"]
 const actions = ["提交浮选", "确认完成", "登记废弃"]
 const statuses = ["待浮选", "浮选中", "已完成", "已废弃"]
-const stats = [{"label": "待浮选样品", "value": 0}, {"label": "浮选中样品", "value": 0}, {"label": "已出结果样品", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

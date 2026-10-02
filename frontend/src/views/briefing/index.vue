@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('briefing')
 const columns = ["简报编号", "涉及探方", "编写人", "初稿日期", "校核意见数", "校核结论", "定稿日期", "简报状态"]
 const actions = ["提交校核", "确认定稿", "退回修改"]
 const statuses = ["待编写", "待校核", "已定稿", "已退回"]
-const stats = [{"label": "待编写简报", "value": 0}, {"label": "待校核简报", "value": 0}, {"label": "本月定稿数", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

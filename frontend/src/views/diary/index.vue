@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('diary')
 const columns = ["日记编号", "记录日期", "记录人", "当日气候", "当日进度", "用工人数", "异常情况", "日记状态"]
 const actions = ["提交日记", "送交审核", "补录内容"]
 const statuses = ["待填写", "已填写", "已审核", "已补录"]
-const stats = [{"label": "待填写日记", "value": 0}, {"label": "已审核日记", "value": 0}, {"label": "本月补录数", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

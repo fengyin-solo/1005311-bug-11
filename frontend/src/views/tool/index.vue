@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('tool')
 const columns = ["领用单号", "领用人", "工具名称", "规格型号", "领用数量", "领用日期", "归还日期", "领用状态"]
 const actions = ["确认领用", "登记归还", "登记报损"]
 const statuses = ["待领用", "使用中", "已归还", "已报损"]
-const stats = [{"label": "使用中工具", "value": 0}, {"label": "逾期未还工具", "value": 0}, {"label": "本月报损数", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

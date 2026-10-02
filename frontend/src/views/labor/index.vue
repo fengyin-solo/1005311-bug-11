@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('labor')
 const columns = ["派工编号", "作业区域", "用工类别", "出工人数", "带队人", "出工日期", "结算工日", "派工状态"]
 const actions = ["提交派工", "确认完工", "取消派工"]
 const statuses = ["待派工", "已派工", "已完工", "已取消"]
-const stats = [{"label": "待派工记录", "value": 0}, {"label": "已派工记录", "value": 0}, {"label": "本月结算工日", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

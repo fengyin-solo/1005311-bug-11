@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('acceptance')
 const columns = ["验收单号", "验收探方", "验收类别", "验收人", "验收日期", "遗留问题数", "验收结论", "验收状态"]
 const actions = ["提交验收", "确认通过", "要求整改"]
 const statuses = ["待验收", "验收中", "已通过", "已整改"]
-const stats = [{"label": "待验收探方", "value": 0}, {"label": "已通过探方", "value": 0}, {"label": "遗留问题总数", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

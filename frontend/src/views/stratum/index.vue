@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('stratum')
 const columns = ["层位编号", "所属探方", "土质", "土色", "包含物", "堆积厚度", "判定年代", "堆积状态"]
 const actions = ["提交编录", "送交复核", "合并层位"]
 const statuses = ["待编录", "编录中", "已复核", "已合并"]
-const stats = [{"label": "待编录层位", "value": 0}, {"label": "编录中层位", "value": 0}, {"label": "已复核层位", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 

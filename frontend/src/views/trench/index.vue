@@ -79,13 +79,14 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import { countByStatus, moduleStats } from '@/data/stats'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('trench')
 const columns = ["探方编号", "所属发掘区", "布方面积", "起始层位", "现场负责人", "开工日期", "最大深度", "探方状态"]
 const actions = ["提交布方", "登记停掘", "办理回填"]
 const statuses = ["待布方", "发掘中", "已停掘", "已回填"]
-const stats = [{"label": "发掘中探方", "value": 0}, {"label": "待布方探方", "value": 0}, {"label": "累计布方面积", "value": 0}]
+const stats = computed(() => moduleStats(meta, rows.value))
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -95,7 +96,7 @@ const filterFields = columns.slice(0, 3)
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
-    count: rows.value.filter((row) => String(row.status) === status).length,
+    count: countByStatus(rows.value, status),
   })),
 )
 
