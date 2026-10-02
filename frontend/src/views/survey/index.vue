@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('survey')
 const columns = ["点位编号", "控制等级", "北坐标", "东坐标", "高程值", "布设日期", "校核日期", "点位状态"]
 const actions = ["提交布设", "送交校核", "登记废弃"]
 const statuses = ["待布设", "可使用", "待校核", "已废弃"]
-const stats = [{"label": "可使用点位", "value": 0}, {"label": "待校核点位", "value": 0}, {"label": "已废弃点位", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '测绘控制点列表读取失败'
   }

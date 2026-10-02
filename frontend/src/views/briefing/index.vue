@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('briefing')
 const columns = ["简报编号", "涉及探方", "编写人", "初稿日期", "校核意见数", "校核结论", "定稿日期", "简报状态"]
 const actions = ["提交校核", "确认定稿", "退回修改"]
 const statuses = ["待编写", "待校核", "已定稿", "已退回"]
-const stats = [{"label": "待编写简报", "value": 0}, {"label": "待校核简报", "value": 0}, {"label": "本月定稿数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '简报校核列表读取失败'
   }

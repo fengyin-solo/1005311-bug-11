@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('conserve')
 const columns = ["修复单号", "修复对象", "病害描述", "修复措施", "使用材料", "修复人", "完成日期", "修复状态"]
 const actions = ["提交修复", "确认完工", "退回重修"]
 const statuses = ["待修复", "修复中", "已完工", "已退回"]
-const stats = [{"label": "待修复器物", "value": 0}, {"label": "修复中器物", "value": 0}, {"label": "本月完工数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '标本修复列表读取失败'
   }

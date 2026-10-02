@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('acceptance')
 const columns = ["验收单号", "验收探方", "验收类别", "验收人", "验收日期", "遗留问题数", "验收结论", "验收状态"]
 const actions = ["提交验收", "确认通过", "要求整改"]
 const statuses = ["待验收", "验收中", "已通过", "已整改"]
-const stats = [{"label": "待验收探方", "value": 0}, {"label": "已通过探方", "value": 0}, {"label": "遗留问题总数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '探方验收列表读取失败'
   }

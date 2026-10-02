@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('sherd')
 const columns = ["拼对编号", "所属单位", "陶系", "纹饰", "可辨器型", "拼合片数", "拼对结论", "拼对状态"]
 const actions = ["提交拼对", "确认复原", "终止拼对"]
 const statuses = ["待拼对", "拼对中", "已复原", "已放弃"]
-const stats = [{"label": "待拼对记录", "value": 0}, {"label": "拼对中记录", "value": 0}, {"label": "已复原器物", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '陶片拼对列表读取失败'
   }

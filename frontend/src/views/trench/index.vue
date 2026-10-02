@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('trench')
 const columns = ["探方编号", "所属发掘区", "布方面积", "起始层位", "现场负责人", "开工日期", "最大深度", "探方状态"]
 const actions = ["提交布方", "登记停掘", "办理回填"]
 const statuses = ["待布方", "发掘中", "已停掘", "已回填"]
-const stats = [{"label": "发掘中探方", "value": 0}, {"label": "待布方探方", "value": 0}, {"label": "累计布方面积", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '探方登记列表读取失败'
   }

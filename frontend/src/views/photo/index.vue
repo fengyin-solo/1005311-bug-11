@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('photo')
 const columns = ["影像编号", "拍摄对象", "拍摄方向", "拍摄日期", "拍摄人", "存储介质", "文件规格", "归档状态"]
 const actions = ["提交整理", "确认归档", "标记重拍"]
 const statuses = ["待整理", "已整理", "已归档", "待重拍"]
-const stats = [{"label": "待整理影像", "value": 0}, {"label": "已归档影像", "value": 0}, {"label": "待重拍影像", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '影像资料列表读取失败'
   }

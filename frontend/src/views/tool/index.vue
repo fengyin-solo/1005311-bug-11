@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('tool')
 const columns = ["领用单号", "领用人", "工具名称", "规格型号", "领用数量", "领用日期", "归还日期", "领用状态"]
 const actions = ["确认领用", "登记归还", "登记报损"]
 const statuses = ["待领用", "使用中", "已归还", "已报损"]
-const stats = [{"label": "使用中工具", "value": 0}, {"label": "逾期未还工具", "value": 0}, {"label": "本月报损数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '工具领用列表读取失败'
   }

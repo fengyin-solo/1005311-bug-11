@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('stratum')
 const columns = ["层位编号", "所属探方", "土质", "土色", "包含物", "堆积厚度", "判定年代", "堆积状态"]
 const actions = ["提交编录", "送交复核", "合并层位"]
 const statuses = ["待编录", "编录中", "已复核", "已合并"]
-const stats = [{"label": "待编录层位", "value": 0}, {"label": "编录中层位", "value": 0}, {"label": "已复核层位", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '地层堆积列表读取失败'
   }

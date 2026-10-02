@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('labor')
 const columns = ["派工编号", "作业区域", "用工类别", "出工人数", "带队人", "出工日期", "结算工日", "派工状态"]
 const actions = ["提交派工", "确认完工", "取消派工"]
 const statuses = ["待派工", "已派工", "已完工", "已取消"]
-const stats = [{"label": "待派工记录", "value": 0}, {"label": "已派工记录", "value": 0}, {"label": "本月结算工日", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '用工派工列表读取失败'
   }

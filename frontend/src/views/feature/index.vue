@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('feature')
 const columns = ["单位编号", "遗迹类型", "所属探方", "开口层位", "平面形状", "现存深度", "保存状况", "单位状态"]
 const actions = ["提交清理", "完成绘图", "登记归位"]
 const statuses = ["待清理", "清理中", "已绘图", "已归位"]
-const stats = [{"label": "清理中单位", "value": 0}, {"label": "待清理单位", "value": 0}, {"label": "已绘图单位", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '遗迹单位列表读取失败'
   }

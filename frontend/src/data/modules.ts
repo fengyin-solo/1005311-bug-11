@@ -12,6 +12,12 @@ export const MODULES: ModuleMeta[] = [
     actions: ["提交布方", "登记停掘", "办理回填"],
     actionTargets: {"提交布方": "发掘中", "登记停掘": "已停掘", "办理回填": "已回填"},
     metrics: ["发掘中探方", "待布方探方", "累计布方面积"],
+    metricRules: [
+      { kind: "status", label: "发掘中探方", status: "发掘中" },
+      { kind: "status", label: "待布方探方", status: "待布方" },
+      { kind: "sum", label: "累计布方面积", field: "布方面积" },
+    ],
+    keyMetric: "发掘中探方",
   },
   {
     key: "stratum",
@@ -199,6 +205,11 @@ export const MODULES: ModuleMeta[] = [
     actions: ["提交验收", "确认通过", "要求整改"],
     actionTargets: {"提交验收": "验收中", "确认通过": "已通过", "要求整改": "已整改"},
     metrics: ["待验收探方", "已通过探方", "遗留问题总数"],
+    metricRules: [
+      { kind: "status", label: "待验收探方", status: "待验收" },
+      { kind: "status", label: "已通过探方", status: "已通过" },
+      { kind: "sum", label: "遗留问题总数", field: "遗留问题数" },
+    ],
   },
 ]
 

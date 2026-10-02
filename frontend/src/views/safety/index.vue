@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('safety')
 const columns = ["巡查编号", "巡查区域", "巡查类别", "隐患描述", "整改措施", "巡查人", "巡查日期", "巡查状态"]
 const actions = ["提交巡查", "确认整改", "上报隐患"]
 const statuses = ["待巡查", "巡查中", "已整改", "已上报"]
-const stats = [{"label": "待巡查区域", "value": 0}, {"label": "待整改隐患", "value": 0}, {"label": "本月巡查次数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '安全巡查列表读取失败'
   }

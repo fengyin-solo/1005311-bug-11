@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('flotation')
 const columns = ["样品编号", "采样单位", "样品重量", "浮选日期", "炭屑含量", "炭化种子数", "送检去向", "样品状态"]
 const actions = ["提交浮选", "确认完成", "登记废弃"]
 const statuses = ["待浮选", "浮选中", "已完成", "已废弃"]
-const stats = [{"label": "待浮选样品", "value": 0}, {"label": "浮选中样品", "value": 0}, {"label": "已出结果样品", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '浮选样品列表读取失败'
   }

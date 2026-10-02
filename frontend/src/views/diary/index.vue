@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('diary')
 const columns = ["日记编号", "记录日期", "记录人", "当日气候", "当日进度", "用工人数", "异常情况", "日记状态"]
 const actions = ["提交日记", "送交审核", "补录内容"]
 const statuses = ["待填写", "已填写", "已审核", "已补录"]
-const stats = [{"label": "待填写日记", "value": 0}, {"label": "已审核日记", "value": 0}, {"label": "本月补录数", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '发掘日记列表读取失败'
   }

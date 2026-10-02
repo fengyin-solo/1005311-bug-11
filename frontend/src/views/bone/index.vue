@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('bone')
 const columns = ["标本编号", "出土单位", "种属", "骨骼部位", "可鉴定性别", "年龄估计", "病理现象", "鉴定状态"]
 const actions = ["提交鉴定", "出具结论", "办理退样"]
 const statuses = ["待鉴定", "鉴定中", "已鉴定", "已退样"]
-const stats = [{"label": "待鉴定标本", "value": 0}, {"label": "鉴定中标本", "value": 0}, {"label": "已鉴定标本", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '骨骼标本列表读取失败'
   }

@@ -77,6 +77,7 @@ import {
   downloadEntries,
   listEntries,
   moduleMeta,
+  moduleStats,
   runAction as applyAction,
 } from '@/api/local-service'
 import type { EntryRow } from '@/data/types'
@@ -85,7 +86,7 @@ const meta = moduleMeta('packing')
 const columns = ["封装编号", "所属单位", "封装材料", "封装数量", "存放位置", "封装日期", "经手人", "封装状态"]
 const actions = ["提交封装", "确认交接", "登记拆封"]
 const statuses = ["待封装", "已封装", "已交接", "已拆封"]
-const stats = [{"label": "待封装记录", "value": 0}, {"label": "已封装记录", "value": 0}, {"label": "已交接记录", "value": 0}]
+const stats = ref<{ label: string; value: number }[]>([])
 
 const rows = ref<EntryRow[]>([])
 const total = ref(0)
@@ -128,6 +129,7 @@ function reload() {
     const payload = listEntries(meta.key, filters.value)
     rows.value = payload.items
     total.value = payload.total
+    stats.value = moduleStats(meta.key)
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '样品封装列表读取失败'
   }
